@@ -1,56 +1,91 @@
 from tkinter import*
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import pynput
+import threading
 
-flag = False
-def change_img():
-  global flag
-  if flag:
-    img2=ImageTk.PhotoImage(Image.open("cat1.jpg"))
-  else:
-    img2=ImageTk.PhotoImage(Image.open("cat2.jpg"))
-  flag = not flag
-  label.configure(image=img2)
-  label.image=img2
+class CatWindow:
+  flagBlock = False
+  flag = False
+  flagWindowResizable = True
+  flagWindowAlwaysOnTop = False
 
-def press(key):
-  if (pynput.keyboard.Key):
-    change_img()
+  def __init__(self):
 
-def teste():
-  print("hello")
+    self.win = Tk()
+    self.win.geometry("450x400")
+    self.win.title("Bongo Cat!")
+    self.menubar = Menu(self.win)
+    self.file = Menu(self.menubar, tearoff=0)
+    self.file.add_command(
+        label='Resize:' + str(self.flagWindowResizable), command=self.setWindowResizable)
+    self.file.add_command(label='Always on Top:' +
+                          str(self.flagWindowAlwaysOnTop), command=self.setWindowOnTop)
+    self.file.add_separator()
+    self.file.add_command(label='Exit', command=self.on_closing)
 
-#test = pynput.keyboard.Listener(on_press=press)
-#test.start()
-#test.join()
+    self.menubar.add_cascade(label='File', menu=self.file)
+    img1 = ImageTk.PhotoImage(Image.open("cat1.jpg"))
 
-win= Tk()
+    self.label = Label(self.win, image=img1)
+    self.label.pack()
 
-win.geometry("450x400")
-win.title("Bongo Cat!")
+    self.win.config(menu=self.menubar)
+    self.win.resizable(self.flagWindowResizable, self.flagWindowResizable)
+    self.win.attributes('-topmost', self.flagWindowAlwaysOnTop)
+    self.win.protocol("WM_DELETE_WINDOW", self.on_closing)
+    self.win.update()
+    self.myListener = pynput.keyboard.Listener(
+        on_press=self.on_press, on_release=self.on_release)
+    self.myListener.start()
+    self.myTimer = self.newTimer()
+    self.win.mainloop()
+    self.myListener.join()
 
-# Creating Menubar
-menubar = Menu(win)
-  
-# Adding File Menu and commands
-file = Menu(menubar, tearoff = 0)
+  def on_closing(self):
+    if messagebox.askokcancel("Quit", "Do you want to quit?"):
+        self.myListener.stop()
+        self.myTimer.cancel()
+        self.win.destroy()
 
-file.add_command(label ='New File', command = teste)
-file.add_command(label ='Open...', command = None)
-file.add_command(label ='Save', command = None)
-file.add_separator()
-file.add_command(label ='Exit', command = win.destroy)
-menubar.add_cascade(label ='File', menu = file)
-img1= ImageTk.PhotoImage(Image.open("cat1.jpg"))
+  def newTimer(self):
+    return threading.Timer(0.5, self.change_img, [True])
 
-label= Label(win,image= img1)
-label.pack()
-# display Menu
-win.config(menu = menubar)
-win.attributes('-topmost', True)
-win.resizable(False, False)
-win.update()
+  def change_img(self, test=False):
+    if(test):
+      img2 = ImageTk.PhotoImage(Image.open("cat1.jpg"))
+    else:
+      if self.flag:
+        img2 = ImageTk.PhotoImage(Image.open("cat1.jpg"))
+        self.myTimer.cancel()
+      else:
+        img2 = ImageTk.PhotoImage(Image.open("cat2.jpg"))
+    self.flag = not self.flag
+    self.label.configure(image=img2)
+    self.label.image = img2
 
-with pynput.keyboard.Listener(on_press=press) as listener:
-  win.mainloop()
-  listener.join()
+  def on_press(self, key):
+    if not self.flagBlock:
+      if (pynput.keyboard.Key):
+        self.myTimer.cancel()
+        self.change_img()
+        self.myTimer = self.newTimer()
+        self.myTimer.start()
+        self.flagBlock = True
+
+  def on_release(self, key):
+    self.flagBlock = False
+
+  def setWindowResizable(self):
+    self.flagWindowResizable = not self.flagWindowResizable
+    self.win.resizable(self.flagWindowResizable, self.flagWindowResizable)
+    self.file.entryconfigure(
+        0, label='Resize:' + str(self.flagWindowResizable))
+
+  def setWindowOnTop(self):
+    self.flagWindowAlwaysOnTop = not self.flagWindowAlwaysOnTop
+    self.win.attributes('-topmost', self.flagWindowAlwaysOnTop)
+    self.file.entryconfigure(
+        1, label='Always on Top:' + str(self.flagWindowAlwaysOnTop))
+
+p1 = threading.Thread(target=CatWindow())
