@@ -1,1 +1,9 @@
-$ pyinstaller.exe --noconsole --onefile class.py
+pyinstaller.exe --noconsole --onefile class.py
+pyinstaller.exe --onefile class.py
+pyinstaller.exe --hidden-import babel.numbers --onefile tela.py
+pyinstaller.exe --hidden-import babel.numbers --noconsole --onefile tela.py
+pyinstaller.exe --hidden-import babel.numbers --noconsole tela.py
+
+pyinstaller.exe --noconsole --onefile –add-data "1.png;2.png;3.png;4.png;5.png" class.py
+
+"1.png;2.png;3.png;4.png;5.png"
