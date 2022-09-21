@@ -31,10 +31,10 @@ Para utilização, mantenha o executável e a pasta "image" no mesmo diretório.
 <br>
 Caso prefira gerar o próprio executável, após instalar o pyinstaller, rode o comando a seguir:
 <br>
+
 ```
 pyinstaller.exe --noconsole --onefile class.py
 ```
-<br>
 
 ## Inspiração
 <br>
