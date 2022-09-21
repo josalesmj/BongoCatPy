@@ -39,7 +39,7 @@ A inspiração para o projeto se deu a partir de um vídeo semelhante ao apresen
 <br>
 <br>
 <p align="center">
-  <a href="http://www.youtube.com/watch?feature=player_embedded&v=nTQUwghvy5Q" target="_blank">
+  <a href="https://www.youtube.com/watch?v=tvg6vvs0WbM" target="_blank">
   <img width="400" height="400" src="https://img.youtube.com/vi/tvg6vvs0WbM/0.jpg">
 </p>
 <br>
