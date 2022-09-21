@@ -1,6 +1,4 @@
-from distutils.command.config import config
-from tkinter import*
-from tkinter import messagebox
+from tkinter import messagebox, Menu, Label, Tk
 from PIL import Image, ImageTk
 import pynput
 import threading
@@ -10,15 +8,13 @@ class CatWindow:
   flag_image_change = False
   flag_on_function_change_img = False
   flag_on_function_on_window_change = False
-  window_is_resizable = True
-  window_always_on_top = True
-  flag_amount_keys_pressed = True
   amount_keys_pressed_on_interval = 0
   amount_keys_pressed = 0
   
+  
   def __init__(self):
     self.win = Tk()
-    self.win.title('Bongo Cat!')
+    self.win.title('BongoCatPy!!')
     
     #Center window
     self.set_variables_from_config_file()
