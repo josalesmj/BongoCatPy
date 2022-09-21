@@ -4,7 +4,6 @@
 <p align="center">
   <img width="272" height="322" src="https://raw.githubusercontent.com/josalesmj/pyCatKeyboard/master/bongocat.gif">
 </p>
-<br>
 
 # 1. Descrição do Projeto
 O projeto consiste em um "listener" monitorando, em segundo plano, o pressionamento das teclas e então realizamos a troca da imagem que é exibida na janela. 
