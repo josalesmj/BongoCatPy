@@ -22,6 +22,10 @@ Utilizamos a biblioteca "threading" para que o monitoramento do pressionamento d
 No menu do topo, podemos configurar o redinmensionamento da janela; selecionar se estará sempre ou não no topo e a exibição da quantidade de teclas digitadas. Também foi adicionado a criação de um arquivo 'config' para manter as configurações da tela para não ser necessário redimensionar e posicionar sempre que abrir novamente. 
 <br>
 <br>
+<p align="center">
+  <img width="272" height="322" src="https://raw.githubusercontent.com/josalesmj/BongoCatPy/master/bongocat1.gif">
+</p>
+<br>
 Para utilização, mantenha o executável e a pasta "image" no mesmo diretório.
 <br>
 <br>
