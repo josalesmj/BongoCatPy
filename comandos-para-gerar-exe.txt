@@ -1,5 +1,5 @@
 pyinstaller.exe --noconsole --onefile class.py
 pyinstaller.exe --onefile class.py
-pyinstaller.exe --hidden-import babel.numbers --onefile tela.py
-pyinstaller.exe --hidden-import babel.numbers --noconsole --onefile tela.py
-pyinstaller.exe --hidden-import babel.numbers --noconsole tela.py
+pyinstaller.exe --hidden-import babel.numbers --onefile class.py
+pyinstaller.exe --hidden-import babel.numbers --noconsole --onefile class.py
+pyinstaller.exe --hidden-import babel.numbers --noconsole class.py
