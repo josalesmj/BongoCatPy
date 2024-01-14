@@ -2,6 +2,7 @@ from tkinter import messagebox, Menu, Label, Tk
 from PIL import Image, ImageTk
 import pynput
 import threading
+from datetime import datetime
 
 class CatWindow:
   flag_key_still_pressed = False;
@@ -28,6 +29,7 @@ class CatWindow:
     self.file.add_command(label='Resize: ' + str(self.window_is_resizable), command=self.set_window_resizable)
     self.file.add_command(label='Always on Top: ' + str(self.window_always_on_top), command=self.set_window_on_top)
     self.file.add_command(label='Show total keys pressed: ' + str(self.flag_amount_keys_pressed), command=self.set_show_amount_keys)
+    self.file.add_command(label='Show time: ' + str(self.flag_show_time), command=self.set_flag_show_time)
     self.file.add_separator()
     self.file.add_command(label='Exit', command=self.on_closing)
     menubar.add_cascade(label='Options', menu=self.file)
@@ -43,6 +45,10 @@ class CatWindow:
     if self.flag_amount_keys_pressed:
       self.label_amount_keys = Label(self.win, text=f'Teclas pressionadas: {self.amount_keys_pressed}')
       self.label_amount_keys.pack()
+    
+    if self.flag_show_time:
+      self.label_time = Label(self.win, text=f'{datetime.now().strftime("%H:%M:%S")}')
+      self.label_time.pack()
 
     self.win.config(menu=menubar)
     self.win.resizable(self.window_is_resizable, self.window_is_resizable)
@@ -54,6 +60,8 @@ class CatWindow:
     self.key_listener = pynput.keyboard.Listener(on_press=self.on_press, on_release=self.on_release)
     self.key_listener.start()
     self.timer_to_reset_image = self.create_timer()
+    self.timer_to_update_time = self.create_second_timer()
+    self.timer_to_update_time.start()
     
     self.win.mainloop()
     self.key_listener.join()
@@ -90,10 +98,12 @@ class CatWindow:
   #Funcoes para a janela
   def on_window_change(self, position):
     if not self.flag_on_function_on_window_change:
+      print(position)
       self.save_config_file(position=position,
                             on_top=self.window_always_on_top,
                             resizable=self.window_is_resizable,
-                            show_keys_pressed=self.flag_amount_keys_pressed)
+                            show_keys_pressed=self.flag_amount_keys_pressed,
+                            show_time=self.flag_show_time)
   
   
   def set_variables_from_config_file(self):
@@ -106,15 +116,16 @@ class CatWindow:
       self.window_always_on_top = (config_dict['on_top'] == 'True')
       self.window_is_resizable = (config_dict['resizable'] == 'True')
       self.flag_amount_keys_pressed = (config_dict['show_keys_pressed'] == 'True')
+      self.flag_show_time = (config_dict['show_time'] == 'True')
     else:
-      self.window_is_resizable = True
-      self.window_always_on_top = True
-      self.flag_amount_keys_pressed = True
-      self.app_width = 270
-      self.app_height = 270
+      self.app_width = 300
+      self.app_height = 300
       self.x = int(self.win.winfo_screenwidth()/2 - self.app_width/2)
       self.y = int(self.win.winfo_screenheight()/2 - self.app_height/2)
-      
+      self.window_always_on_top = True
+      self.window_is_resizable = True
+      self.flag_amount_keys_pressed = True
+      self.flag_show_time = True
   
   def read_config_file(self):
     config_dict = {}
@@ -129,7 +140,7 @@ class CatWindow:
       return config_dict
 
 
-  def save_config_file(self, *, position=None, on_top=None, resizable=None, show_keys_pressed=None):
+  def save_config_file(self, *, position=None, on_top=None, resizable=None, show_keys_pressed=None, show_time=None):
     self.flag_on_function_on_window_change = True
     config_dict = {}
     if position != None:
@@ -143,6 +154,9 @@ class CatWindow:
       config_dict['resizable'] = resizable
     if show_keys_pressed != None:
       config_dict['show_keys_pressed'] = show_keys_pressed
+    if show_time != None:
+      config_dict['show_time'] = show_time
+
     
     with open('config.conf', 'w+') as file:
       for key, value in config_dict.items():
@@ -160,6 +174,8 @@ class CatWindow:
     if messagebox.askokcancel('Quit', 'Do you want to quit?'):
         self.key_listener.stop()
         self.timer_to_reset_image.cancel()
+        self.timer_to_update_time.cancel()
+
         self.win.destroy()
     
     
@@ -183,6 +199,26 @@ class CatWindow:
       self.label_amount_keys.pack()
     else:
       self.label_amount_keys.destroy()
+  
+  
+  def set_flag_show_time(self):
+    self.flag_show_time = not self.flag_show_time
+    self.file.entryconfigure(3, label='Show time: ' + str(self.flag_show_time))
+    
+    if self.flag_show_time:
+      self.label_time = Label(self.win, text=f'{datetime.now().strftime("%H:%M:%S")}')
+      self.label_time.pack()
+      self.timer_to_update_time = self.create_second_timer()
+      self.timer_to_update_time.start()
+    else:
+      self.timer_to_update_time.cancel()
+      self.label_time.destroy()
+
+  def update_label_time(self):
+    if self.flag_show_time:
+      self.label_time.configure(text=f'{datetime.now().strftime("%H:%M:%S")}')
+      self.timer_to_update_time = self.create_second_timer()
+      self.timer_to_update_time.start()
     
     
   #Funcoes do listener do teclado
@@ -204,6 +240,9 @@ class CatWindow:
     
   def create_timer(self):
     return threading.Timer(0.5, self.change_img, [True])
+
+  def create_second_timer(self):
+    return threading.Timer(1.0, self.update_label_time)
     
     
 catWindow = threading.Thread(target=CatWindow())
